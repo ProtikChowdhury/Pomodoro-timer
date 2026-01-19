@@ -71,35 +71,30 @@ document.addEventListener('DOMContentLoaded', () => {
             card.addEventListener('click', () => {
                 console.log("Card clicked:", card.dataset.work);
 
-                // 1. Remove Splash IMMEDIATELY (Visual feedback first)
-                if (splash) {
-                    splash.style.transition = 'opacity 0.3s ease';
-                    splash.style.opacity = '0';
-                    setTimeout(() => {
-                        if (splash.parentNode) splash.parentNode.removeChild(splash);
-                    }, 300);
+                // 1. Fullscreen MUST be first (User Interaction Restriction)
+                if (timer) {
+                    timer.toggleFullScreen();
                 }
 
-                // 2. Show Main UI
+                // 2. Remove Splash IMMEDIATELY (No animation to fail)
+                if (splash) {
+                    splash.style.display = 'none'; // Instant hide
+                    splash.remove(); // Nuke from DOM
+                }
+
+                // 3. Show Main UI
                 const container = document.querySelector('.glass-container');
                 if (container) {
                     container.style.display = 'flex';
-                    // Force Reflow
-                    void container.offsetWidth;
                     container.style.opacity = '1';
                 }
 
-                // 3. Set Mode & Start
+                // 4. Set Mode & Start
                 if (timer) {
                     const workMins = card.dataset.work;
                     const modeBtn = document.querySelector(`.mode-btn[data-work="${workMins}"]`);
                     if (modeBtn) timer.setMode(modeBtn);
-
-                    // Small delay to ensure UI transition is smooth before audio/fullscreen
-                    setTimeout(() => {
-                        timer.start();
-                        timer.toggleFullScreen();
-                    }, 100);
+                    timer.start();
                 }
             });
         });

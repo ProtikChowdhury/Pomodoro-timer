@@ -732,9 +732,9 @@ body.break-mode .timer-display {
         /* Grow to fill */
     }
 
-    /* Splash Screen - Fits on one screen */
+    /* Splash Screen - Compact fit */
     .splash-container {
-        padding: 1rem;
+        padding: 0.5rem;
         height: 100vh;
         display: flex;
         flex-direction: column;
@@ -744,49 +744,43 @@ body.break-mode .timer-display {
     .splash-grid {
         flex-direction: column;
         align-items: center;
-        gap: 0.8rem;
-        /* Tighter gap */
-        max-height: none;
-        overflow-y: visible;
-        /* Remove scroll */
-        padding-bottom: 0;
+        gap: 0.5rem;
+        /* Very tight gap */
         width: 100%;
     }
 
     .splash-card {
-        width: 90%;
-        /* Full width minus padding */
-        max-width: 320px;
-        padding: 1rem 1.5rem;
-        /* Compact padding */
+        width: 95%;
+        max-width: 300px;
+        padding: 0.8rem 1rem;
+        /* Smaller padding */
         display: flex;
-        /* Horizontal internal layout for compactness? Or just tighter vertical */
         flex-direction: row;
-        /* Let's try horizontal card layout for mobile! Premium & Compact */
         align-items: center;
-        gap: 1rem;
-        text-align: left;
+        gap: 0.8rem;
+        min-height: 60px;
+        /* Ensure consistency */
     }
 
     .card-icon {
-        font-size: 2rem;
+        font-size: 1.5rem;
         /* Smaller icon */
         margin-bottom: 0;
     }
 
     .splash-card h3 {
         margin: 0;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
 
     .splash-card p {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         margin-top: 2px;
     }
 
     .splash-title {
-        font-size: 1.8rem;
-        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     /* Modals */
