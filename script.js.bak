@@ -1,0 +1,278 @@
+constructor() {
+    // Configuration
+    this.workDuration = 25 * 60;
+    this.breakDuration = 5 * 60;
+
+    // State
+    this.currentTime = this.workDuration;
+    this.isWorkTime = true;
+    this.isRunning = false;
+    this.timerId = null;
+    this.soundManager = new SoundManager();
+
+    // DOM Elements
+    this.timerElement = document.getElementById('timer');
+    this.statusElement = document.getElementById('status-indicator');
+    this.controlHintElement = document.getElementById('control-hint');
+    this.progressRing = document.querySelector('.progress-ring__circle');
+    this.modeButtons = document.querySelectorAll('.mode-btn');
+    this.body = document.body;
+
+    // SVG Circle Stats
+    this.radius = this.progressRing.r.baseVal.value;
+    this.circumference = 2 * Math.PI * this.radius;
+
+    this.init();
+}
+
+init() {
+    // Setup initial UI
+    this.updateDisplay();
+    this.setupEventListeners();
+
+    // Setup Progress Ring
+    this.progressRing.style.strokeDasharray = `${this.circumference} ${this.circumference}`;
+    this.progressRing.style.strokeDashoffset = 0;
+}
+
+setupEventListeners() {
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') {
+            e.preventDefault(); // Prevent scrolling
+            this.toggleTimer();
+        }
+    });
+
+    document.getElementById('skip-btn').addEventListener('click', () => {
+        this.switchMode();
+    });
+
+    this.modeButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            this.setMode(e.target);
+        });
+    });
+}
+
+setMode(targetBtn) {
+    // Update Active UI
+    this.modeButtons.forEach(btn => btn.classList.remove('active'));
+    targetBtn.classList.add('active');
+
+    // Update Durations
+    const workMins = parseInt(targetBtn.dataset.work);
+    const breakMins = parseInt(targetBtn.dataset.break);
+
+    this.workDuration = workMins * 60;
+    this.breakDuration = breakMins * 60;
+
+    // Reset Timer
+    this.pause();
+    this.isWorkTime = true; // Always reset to start of work
+    this.currentTime = this.workDuration;
+    this.statusElement.textContent = 'Work Time';
+    this.body.classList.remove('break-mode');
+    this.controlHintElement.textContent = 'Start';
+
+    this.updateDisplay();
+    this.updateProgress();
+}
+
+toggleTimer() {
+    if (this.isRunning) {
+        this.pause();
+    } else {
+        this.start();
+    }
+}
+
+start() {
+    if (this.isRunning) return;
+
+    this.isRunning = true;
+    this.controlHintElement.textContent = 'Pause';
+    this.soundManager.playStart();
+
+    this.timerId = setInterval(() => {
+        if (this.currentTime > 0) {
+            this.currentTime--;
+            this.updateDisplay();
+            this.updateProgress();
+        } else {
+            this.switchMode();
+        }
+    }, 1000);
+}
+
+pause() {
+    this.isRunning = false;
+    this.controlHintElement.textContent = 'Resume';
+    clearInterval(this.timerId);
+}
+
+switchMode() {
+    this.pause(); // Stop the interval
+    this.soundManager.playComplete();
+
+    this.isWorkTime = !this.isWorkTime;
+
+    if (this.isWorkTime) {
+        this.currentTime = this.workDuration;
+        this.statusElement.textContent = 'Work Time';
+        this.body.classList.remove('break-mode');
+    } else {
+        this.currentTime = this.breakDuration;
+        this.statusElement.textContent = 'Break Time';
+        this.body.classList.add('break-mode');
+    }
+
+    this.updateDisplay();
+    this.updateProgress();
+    this.controlHintElement.textContent = 'Start';
+
+    // Optional: Auto-start next session? 
+    // For now, let's keep it manual start for better control, or auto.
+    // The prompt implies a flow: "then another 5 min timer starts". 
+    // Let's auto-start the break for convenience.
+    // Update: Removed auto-start for sound clarity, or keep it? 
+    // Logic: if switchMode is called, play complete sound.
+    // If we auto-start, we might play 'complete' then 'start' immediately.
+    // Let's create a small delay or just leverage that switchMode calls start() at the end.
+
+    // Wait 1s before auto-starting to let the Complete sound breathe?
+    // Actually, let's let the user manually start OR auto-start. 
+    // If we auto-start, playStart() inside start() will trigger.
+    // So we get Complete -> Start chord sequence, which is nice.
+    this.start();
+}
+
+updateDisplay() {
+    const minutes = Math.floor(this.currentTime / 60);
+    const seconds = this.currentTime % 60;
+
+    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    this.timerElement.textContent = formattedTime;
+    document.title = `${formattedTime} - Focus Flow`;
+}
+
+updateProgress() {
+    const totalTime = this.isWorkTime ? this.workDuration : this.breakDuration;
+    const progress = this.currentTime / totalTime;
+    const offset = this.circumference - (progress * this.circumference);
+
+    this.progressRing.style.strokeDashoffset = offset;
+}
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    new PomodoroTimer();
+    new BackgroundAnimation();
+});
+
+class SoundManager {
+    constructor() {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.value = 0.3; // Low volume by default
+        this.masterGain.connect(this.ctx.destination);
+    }
+
+    resume() {
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    playTone(freq, type, duration, startTime = 0) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + startTime);
+
+        gain.gain.setValueAtTime(0, this.ctx.currentTime + startTime);
+        gain.gain.linearRampToValueAtTime(1, this.ctx.currentTime + startTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + startTime + duration);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.start(this.ctx.currentTime + startTime);
+        osc.stop(this.ctx.currentTime + startTime + duration + 0.1);
+    }
+
+    playStart() {
+        this.resume();
+        // Rising Major Chord (C - E - G)
+        this.playTone(523.25, 'sine', 0.6, 0);   // C5
+        this.playTone(659.25, 'sine', 0.6, 0.1); // E5
+        this.playTone(783.99, 'sine', 1.0, 0.2); // G5
+    }
+
+    playComplete() {
+        this.resume();
+        // Success Chime (G - C)
+        this.playTone(783.99, 'sine', 0.3, 0);   // G5
+        this.playTone(1046.50, 'sine', 1.5, 0.2); // C6
+    }
+}
+
+class BackgroundAnimation {
+    constructor() {
+        this.canvas = document.getElementById('bg-canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.waves = [];
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+
+        this.init();
+    }
+
+    init() {
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+
+        // Create waves (Warm, No-Blue-Light Palette)
+        this.waves = [
+            { y: this.height * 0.5, length: 0.005, amplitude: 100, speed: 0.01, offset: 0, color: 'rgba(239, 68, 68, 0.05)' }, // Red
+            { y: this.height * 0.5, length: 0.006, amplitude: 80, speed: 0.015, offset: 2, color: 'rgba(249, 115, 22, 0.05)' }, // Orange
+            { y: this.height * 0.55, length: 0.004, amplitude: 120, speed: 0.008, offset: 4, color: 'rgba(185, 28, 28, 0.03)' }, // Dark Red
+            { y: this.height * 0.45, length: 0.0055, amplitude: 90, speed: 0.02, offset: 1, color: 'rgba(251, 146, 60, 0.04)' } // Light Orange
+        ];
+
+        this.animate();
+    }
+
+    resize() {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+    }
+
+    animate() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        this.waves.forEach(wave => {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, this.height);
+            this.ctx.fillStyle = wave.color;
+
+            for (let x = 0; x < this.width; x++) {
+                // Sine wave formula: y = amplitude * sin(x * length + offset)
+                const y = wave.y + Math.sin(x * wave.length + wave.offset) * wave.amplitude;
+                this.ctx.lineTo(x, y);
+            }
+
+            this.ctx.lineTo(this.width, this.height);
+            this.ctx.closePath();
+            this.ctx.fill();
+
+            // Move wave
+            wave.offset += wave.speed;
+        });
+
+        requestAnimationFrame(() => this.animate());
+    }
+}
