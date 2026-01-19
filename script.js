@@ -68,8 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (splash && cards.length > 0) {
         console.log("Splash screen found, attaching listeners to", cards.length, "cards");
         cards.forEach(card => {
-            card.addEventListener('click', () => {
-                console.log("Card clicked:", card.dataset.work);
+            const activateCard = (e) => {
+                if (e.type === 'touchstart') e.preventDefault(); // Prevent double-fire
+                console.log("Card activated:", card.dataset.work);
 
                 // 1. Show Main UI
                 const container = document.querySelector('.glass-container');
@@ -79,10 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     container.style.opacity = '1';
                 }
 
-                // 2. Theme remains Campfire (Default)
-                // if (timer) timer.applyUserTheme(); // REMOVED
-
-                // 3. Set Mode & Start
+                // 2. Set Mode & Start
                 if (timer) {
                     const workMins = card.dataset.work;
                     const modeBtn = document.querySelector(`.mode-btn[data-work="${workMins}"]`);
@@ -91,10 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     timer.toggleFullScreen();
                 }
 
-                // 4. Fade out
+                // 3. Fade out
                 splash.style.opacity = '0';
                 setTimeout(() => splash.remove(), 500);
-            });
+            };
+
+            card.addEventListener('click', activateCard);
+            card.addEventListener('touchstart', activateCard, { passive: false });
         });
     } else {
         console.warn("Splash screen or cards not found");

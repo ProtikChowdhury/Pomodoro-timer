@@ -763,7 +763,12 @@ body.break-mode .timer-display {
         /* 1 column for themes on mobile */
     }
 
-    /* Hide decorative blobs on very small screens to save performance/visual noise */
+    /* Reduce animation for touch reliability */
+    .splash-card {
+        animation: fadeInUp 0.5s forwards;
+        /* Remove floatCard */
+    }
+
     .blob {
         opacity: 0.3;
     }
