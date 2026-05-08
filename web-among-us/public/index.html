@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Among Us</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/phaser/phaser.min.js"></script>
+
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            backgroundColor: '#222222',
+            parent: 'game-container',
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        const game = new Phaser.Game(config);
+        let socket;
+
+        function preload() {
+            // We will load assets here later
+        }
+
+        function create() {
+            socket = io();
+
+            socket.on('connect', () => {
+                console.log('Connected to server with ID:', socket.id);
+            });
+
+            this.add.text(20, 20, 'Waiting for players...', { fontSize: '32px', fill: '#ffffff' });
+        }
+
+        function update() {
+            // Game loop logic
+        }
+    </script>
+</body>
+
+</html>

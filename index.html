@@ -21,6 +21,7 @@
 
 <div class="app-background">
     <canvas id="bg-canvas"></canvas>
+    <canvas id="zen-canvas" class="hidden"></canvas> <!-- Zen Mode Rain Canvas -->
 </div>
 
 <div id="splash-screen">
@@ -42,17 +43,24 @@
                 <h3>Flow</h3>
                 <p>90m Work • 30m Break</p>
             </div>
+            <!-- Zen Mode Card -->
+            <div class="splash-card" data-mode="zen">
+                <div class="card-icon">🧘</div>
+                <h3>Zen</h3>
+                <p>Just Rain • No Timer</p>
+            </div>
         </div>
     </div>
 </div>
 <div class="glass-container">
     <header>
-        <h1>Focus Flow</h1>
+        <h1 id="app-title">Focus Flow</h1>
         <div class="mode-selector">
             <button class="mode-btn active" data-work="25" data-break="5">25/5</button>
             <button class="mode-btn" data-work="50" data-break="10">50/10</button>
             <button class="mode-btn" data-work="90" data-break="30">90/30</button>
             <button class="mode-btn" id="custom-timer-btn">Custom</button>
+            <button class="mode-btn" id="zen-mode-btn" data-mode="zen">Zen</button>
         </div>
         <div id="status-indicator">Work Time</div>
         <div class="top-left-group">
@@ -65,7 +73,8 @@
     </header>
 
     <main>
-        <div class="timer-ring">
+
+        <div class="timer-ring" id="timer-view">
             <svg class="progress-ring" width="300" height="300">
                 <circle class="progress-ring__circle-bg" stroke="rgba(255, 69, 0, 0.1)" stroke-width="12"
                     fill="transparent" r="120" cx="150" cy="150" />
@@ -74,6 +83,7 @@
             </svg>
             <div class="timer-display" id="timer">25:00</div>
         </div>
+
 
         <div class="controls">
             <!-- Settings Button (Theme Picker) -->
@@ -209,6 +219,7 @@
 <div id="overlay" class="overlay hidden"></div>
 
 <script src="rain_sound.js"></script>
+<script src="zen_mode.js"></script>
 <script src="script.v2.js"></script>
 <script>
     if ('serviceWorker' in navigator) {

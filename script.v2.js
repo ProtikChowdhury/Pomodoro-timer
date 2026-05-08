@@ -91,6 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 4. Set Mode & Start
                 if (timer) {
+                    // Check for Zen Mode
+                    if (card.dataset.mode === 'zen') {
+                        const zenBtn = document.getElementById('zen-mode-btn');
+                        if (zenBtn) timer.setMode(zenBtn);
+                        return; // Don't start timer logic
+                    }
+
                     const workMins = card.dataset.work;
                     const modeBtn = document.querySelector(`.mode-btn[data-work="${workMins}"]`);
                     if (modeBtn) timer.setMode(modeBtn);
@@ -183,12 +190,54 @@ class PomodoroTimer {
 
     setupEventListeners() {
         document.addEventListener('keydown', (e) => {
+            // Ignore if user is typing in an input
+            // Ignore if user is typing in an input or if a button is focused (to avoid double-fire)
+            if (e.target.tagName === 'INPUT' ||
+                e.target.tagName === 'TEXTAREA' ||
+                (e.code === 'Space' && e.target.tagName === 'BUTTON')) {
+                return;
+            }
+
             if (e.code === 'Space') {
                 e.preventDefault();
-                this.toggleTimer();
+                if (this.isZenMode) {
+                    this.toggleZenSound();
+                } else {
+                    this.toggleTimer();
+                }
             } else if (e.code === 'Tab') {
                 e.preventDefault();
                 this.cycleModes();
+            } else if (e.code === 'KeyF') {
+                const container = document.querySelector('.glass-container');
+                const isTimerPage = container && window.getComputedStyle(container).display !== 'none';
+
+                if (isTimerPage) {
+                    e.preventDefault();
+                    this.toggleFullScreen();
+                }
+            } else if (e.code === 'Escape') {
+                const settingsModal = document.getElementById('theme-modal');
+                const customModal = document.getElementById('custom-timer-modal');
+                let handled = false;
+
+                if (settingsModal && settingsModal.classList.contains('visible')) {
+                    e.preventDefault();
+                    settingsModal.classList.remove('visible');
+                    setTimeout(() => settingsModal.classList.add('hidden'), 300);
+                    handled = true;
+                }
+
+                if (customModal && customModal.classList.contains('visible')) {
+                    e.preventDefault();
+                    customModal.classList.remove('visible');
+                    setTimeout(() => customModal.classList.add('hidden'), 300);
+                    handled = true;
+                }
+
+                if (!handled && document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
             }
         });
 
@@ -333,7 +382,11 @@ class PomodoroTimer {
 
     toggleFullScreen() {
         if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
+            document.documentElement.requestFullscreen().then(() => {
+                if (navigator.keyboard && navigator.keyboard.lock) {
+                    navigator.keyboard.lock(['Escape']).catch(e => console.log('Keyboard lock failed:', e));
+                }
+            }).catch(err => {
                 console.log(`Error attempting to enable fullscreen: ${err.message}`);
             });
         } else {
@@ -358,6 +411,17 @@ class PomodoroTimer {
         // Visual Update (Always happen immediately for feedback)
         this.modeButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+
+        // Check for Zen Mode
+        if (btn.dataset.mode === 'zen') {
+            this.startZenMode();
+            return;
+        }
+
+        // If we were in Zen Mode, exit it first
+        if (this.isZenMode) {
+            this.stopZenMode();
+        }
 
         // Parse Durations
         let workMins = parseInt(btn.dataset.work);
@@ -384,6 +448,72 @@ class PomodoroTimer {
             this.breakDuration = newBreakDuration;
             this.activeCustomTimerId = null;
             this.resetTimerState();
+        }
+    }
+
+    startZenMode() {
+        if (this.isZenMode) return;
+
+        console.log("Entering Zen Mode");
+        this.isZenMode = true;
+        this.pause(); // Stop any active timer
+        this.isRunning = false; // Ensure state is clear
+
+        // UI Changes
+        document.body.classList.add('zen-mode-active');
+        document.title = "Zen Mode - Focus Flow";
+
+        // Start Rain Animation
+        if (typeof ZenMode !== 'undefined') {
+            ZenMode.start();
+        }
+
+        // Start Rain Sound (if available)
+        if (this.soundManager) {
+            // Ensure noise is playing
+            if (!this.soundManager.isPlayingNoise) {
+                this.soundManager.toggleNoise(true);
+                // Update UI toggle button if exists
+                const toggleBtn = document.getElementById('noise-toggle-btn');
+                if (toggleBtn) {
+                    toggleBtn.textContent = 'Stop';
+                    toggleBtn.classList.add('active');
+                }
+            }
+        }
+    }
+
+    stopZenMode() {
+        if (!this.isZenMode) return;
+
+        console.log("Exiting Zen Mode");
+        this.isZenMode = false;
+
+        // UI Changes
+        document.body.classList.remove('zen-mode-active');
+        document.title = "Focus Flow"; // Will be updated by timer display shortly
+
+        // Stop Rain Animation
+        if (typeof ZenMode !== 'undefined') {
+            ZenMode.stop();
+        }
+
+        // Note: We deliberately do NOT stop the sound automatically. 
+        // User might want to keep listening while working.
+    }
+
+    toggleZenSound() {
+        if (!this.soundManager) return;
+
+        // Toggle state
+        const isPlaying = !this.soundManager.isPlayingNoise;
+        this.soundManager.toggleNoise(isPlaying);
+
+        // Sync UI Button if it exists (in the modal)
+        const toggleBtn = document.getElementById('noise-toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.textContent = isPlaying ? 'Stop' : 'Play';
+            toggleBtn.classList.toggle('active', isPlaying);
         }
     }
 
