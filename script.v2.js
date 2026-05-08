@@ -68,18 +68,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (splash && cards.length > 0) {
         console.log("Splash screen found, attaching listeners to", cards.length, "cards");
         cards.forEach(card => {
-            card.addEventListener('click', () => {
+            const handleCardClick = () => {
                 console.log("Card clicked:", card.dataset.work);
 
-                // 1. Fullscreen MUST be first (User Interaction Restriction)
-                if (timer) {
-                    timer.toggleFullScreen();
+                // 1. Remove Splash IMMEDIATELY (Before any potential failures)
+                if (splash) {
+                    splash.style.display = 'none'; 
+                    splash.remove(); 
                 }
 
-                // 2. Remove Splash IMMEDIATELY (No animation to fail)
-                if (splash) {
-                    splash.style.display = 'none'; // Instant hide
-                    splash.remove(); // Nuke from DOM
+                // 2. Fullscreen MUST be first (User Interaction Restriction)
+                if (timer) {
+                    try {
+                        timer.toggleFullScreen();
+                    } catch(e) { console.warn("Fullscreen failed", e); }
                 }
 
                 // 3. Show Main UI
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (card.dataset.mode === 'zen') {
                         const zenBtn = document.getElementById('zen-mode-btn');
                         if (zenBtn) timer.setMode(zenBtn);
-                        return; // Don't start timer logic
+                        return; 
                     }
 
                     const workMins = card.dataset.work;
@@ -103,7 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (modeBtn) timer.setMode(modeBtn);
                     timer.start();
                 }
-            });
+            };
+
+            card.addEventListener('click', handleCardClick);
+            card.addEventListener('touchstart', (e) => {
+                // Prevent duplicate trigger but allow the action
+                e.preventDefault();
+                handleCardClick();
+            }, { passive: false });
         });
     } else {
         console.warn("Splash screen or cards not found");

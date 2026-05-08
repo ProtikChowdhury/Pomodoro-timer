@@ -344,6 +344,11 @@ body {
     animation: fadeInUp 0.5s forwards, floatCard 6s ease-in-out infinite;
     animation-delay: 0.3s, 1s;
     /* Float starts after fade in */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: inherit;
+    text-align: center;
 }
 
 @keyframes floatCard {
