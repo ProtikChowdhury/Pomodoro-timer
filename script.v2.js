@@ -252,11 +252,81 @@ class PomodoroTimer {
         const timerView = document.getElementById('timer-view');
         if (timerView) {
             timerView.style.cursor = 'pointer';
-            timerView.addEventListener('click', () => {
-                if (this.isZenMode) {
-                    this.toggleZenSound();
-                } else {
-                    this.toggleTimer();
+            
+            let lastTap = 0;
+            let touchStartY = 0;
+            let touchStartX = 0;
+
+            const handleInteraction = (e) => {
+                const now = Date.now();
+                const DOUBLE_TAP_DELAY = 300;
+
+                // 1. Double Tap Detection
+                if (now - lastTap < DOUBLE_TAP_DELAY) {
+                    console.log("Double Tap detected - Skipping");
+                    if (this.isZenMode) {
+                        this.stopZenMode();
+                    } else {
+                        this.switchMode();
+                    }
+                    this.vibrate(100);
+                    lastTap = 0;
+                    return;
+                }
+                lastTap = now;
+
+                // 2. Single Tap Action
+                setTimeout(() => {
+                    if (lastTap === now) {
+                        if (this.isZenMode) {
+                            this.toggleZenSound();
+                        } else {
+                            this.toggleTimer();
+                        }
+                        this.vibrate(50);
+                    }
+                }, DOUBLE_TAP_DELAY);
+            };
+
+            timerView.addEventListener('click', (e) => {
+                // Ignore clicks if they were actually swipes (handled by touch events)
+                if (e.pointerType === 'touch') return; 
+                handleInteraction(e);
+            });
+
+            timerView.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }, { passive: true });
+
+            timerView.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+                const SWIPE_THRESHOLD = 50;
+
+                if (Math.abs(deltaY) > SWIPE_THRESHOLD && Math.abs(deltaY) > Math.abs(deltaX)) {
+                    if (deltaY > 0) {
+                        // Swipe Down - Reset
+                        console.log("Swipe Down - Resetting");
+                        this.resetTimerState();
+                        this.vibrate([50, 30, 50]);
+                    } else {
+                        // Swipe Up - Settings
+                        console.log("Swipe Up - Settings");
+                        const settingsBtn = document.getElementById('settings-btn');
+                        if (settingsBtn) settingsBtn.click();
+                        this.vibrate(50);
+                    }
+                } else if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+                    // Swipe Left/Right - Cycle Modes
+                    console.log("Swipe Horizontal - Cycling Modes");
+                    this.cycleModes();
+                    this.vibrate(50);
+                } else if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+                    // It's a tap
+                    handleInteraction(e);
                 }
             });
         }
@@ -899,6 +969,12 @@ class PomodoroTimer {
             this.breakDuration = newBreakDuration;
             this.activeCustomTimerId = timer.id;
             this.resetTimerState();
+        }
+    }
+
+    vibrate(pattern) {
+        if ("vibrate" in navigator) {
+            navigator.vibrate(pattern);
         }
     }
 }

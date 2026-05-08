@@ -289,7 +289,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, rgba(15, 5, 5, 0.98), rgba(0, 0, 0, 1));
+    background: radial-gradient(circle at center, rgba(15, 5, 5, 1), rgba(0, 0, 0, 1));
     display: flex;
     justify-content: center;
     align-items: center;
@@ -297,7 +297,7 @@ body {
     transition: opacity 0.5s ease, visibility 0.5s ease;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    overflow-y: auto; /* Allow scrolling if many cards */
+    overflow: hidden; /* No scrolling allowed */
 }
 
 .splash-container {
@@ -772,85 +772,71 @@ body.break-mode .timer-display {
 
     /* Splash Screen - Compact fit */
     .splash-container {
-        padding: 1rem 0; /* Remove horizontal padding for full-width carousel */
-        min-height: 100vh;
+        padding: 1.5rem;
+        height: 100vh;
+        width: 100vw;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
+        overflow: hidden;
     }
 
     .splash-title {
-        font-size: 2rem;
-        margin-bottom: 3rem;
-        padding: 0 2rem;
+        font-size: 1.6rem;
+        margin-bottom: 2rem;
+        font-weight: 300;
+        letter-spacing: 1px;
     }
 
     .splash-grid {
-        display: flex;
-        flex-direction: row;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        gap: 1.5rem;
-        padding: 2rem 3rem; /* Space for cards to float */
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 1rem;
         width: 100%;
-        scrollbar-width: none; /* Hide scrollbar Firefox */
-        -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
-    }
-
-    .splash-grid::-webkit-scrollbar {
-        display: none; /* Hide scrollbar Chrome/Safari */
+        max-width: 400px;
+        height: auto;
+        aspect-ratio: 1/1; /* Keep it a square grid */
+        padding: 0;
     }
 
     .splash-card {
-        flex: 0 0 auto;
-        width: 75vw;
-        max-width: 300px;
-        min-height: 380px;
-        padding: 3rem 2rem;
-        flex-direction: column; /* Vertical in the deck */
-        text-align: center;
-        justify-content: center;
-        scroll-snap-align: center;
-        gap: 2rem;
-        border-radius: 32px;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+        width: 100%;
+        height: 100%;
+        min-height: auto;
+        padding: 1.5rem 1rem;
+        flex-direction: column;
+        gap: 0.8rem;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
     .splash-card h3 {
-        font-size: 1.8rem;
-        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+        margin: 0;
+        font-weight: 500;
     }
 
     .splash-card p {
-        font-size: 1.2rem;
-        opacity: 0.6;
-        letter-spacing: 2px;
+        font-size: 0.8rem;
+        opacity: 0.5;
+        letter-spacing: 1px;
     }
 
     .card-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-        width: auto;
+        font-size: 2.2rem;
+        margin: 0;
     }
 
-    .card-content {
-        align-items: center;
+    .instruction {
+        display: none !important; /* Hide keyboard hints on mobile */
     }
 
-    /* Active Card highlight for the deck */
-    .splash-card {
-        transform: scale(0.9);
-        transition: transform 0.4s ease, opacity 0.4s ease;
-        opacity: 0.5;
-    }
-
-    /* This is a CSS trick for scroll-snap-centering - we can't easily detect active in CSS, 
-       but we can use intersection observer in JS or just rely on the snap feel. 
-       Let's use scale for all but make them look uniform first. */
-    .splash-card {
-        opacity: 1;
-        transform: scale(1);
+    .mode-selector {
+        display: none !important; /* Fully hidden, use gestures */
     }
 
     /* Modals */
