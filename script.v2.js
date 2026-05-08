@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-icon">⭐</div>
                     <div class="card-content">
                         <h3>${ct.name}</h3>
-                        <p>${ct.work}m Work • ${ct.hasBreak ? ct.break + 'm Break' : 'No Break'}</p>
+                        <p>${ct.work}-${ct.break}</p>
                     </div>
                 `;
 
@@ -140,6 +140,7 @@ class PomodoroTimer {
     init() {
         this.updateDateDisplay();
         this.updateClockDisplay();
+        this.updateInstructions();
 
         // Setup initial UI
         this.updateDisplay();
@@ -155,6 +156,20 @@ class PomodoroTimer {
         setInterval(() => this.updateDateDisplay(), 60000);
         // Update Clock every second
         setInterval(() => this.updateClockDisplay(), 1000);
+    }
+
+    updateInstructions() {
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const instruction = document.querySelector('.instruction');
+        if (instruction) {
+            if (isTouch) {
+                instruction.innerHTML = 'Tap <span class="key-hint">Timer</span> to <span id="control-hint">Start</span>';
+            } else {
+                instruction.innerHTML = 'Press <span class="key-hint">Space</span> to <span id="control-hint">Start</span>';
+            }
+            // Re-fetch control-hint element as it was just overwritten
+            this.controlHintElement = document.getElementById('control-hint');
+        }
     }
 
     updateDateDisplay() {

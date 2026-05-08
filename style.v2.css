@@ -332,33 +332,35 @@ body {
 .splash-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
+    border-radius: 28px; /* Softer corners */
     padding: 2.5rem 2rem;
-    width: 220px;
+    width: 240px;
+    min-height: 280px;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     opacity: 0;
     animation: fadeInUp 0.8s forwards;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     font-family: inherit;
     text-align: center;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     touch-action: manipulation;
 }
 
 .splash-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-12px) scale(1.02);
     background: rgba(255, 255, 255, 0.08);
     border-color: var(--accent-work);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(239, 68, 68, 0.2);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 25px rgba(239, 68, 68, 0.2);
 }
 
 .splash-card:active {
-    transform: translateY(-5px) scale(0.98);
+    transform: translateY(-6px) scale(0.96);
 }
 
 @keyframes floatCard {
@@ -770,62 +772,85 @@ body.break-mode .timer-display {
 
     /* Splash Screen - Compact fit */
     .splash-container {
-        padding: 2rem 1rem;
+        padding: 1rem 0; /* Remove horizontal padding for full-width carousel */
         min-height: 100vh;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* Start from top to allow scrolling */
-    }
-
-    .splash-title {
-        font-size: 1.8rem;
-        margin-bottom: 2rem;
-        margin-top: 1rem;
-    }
-
-    .splash-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        width: 100%;
-        padding: 0;
-    }
-
-    .splash-card {
-        width: 100%;
-        max-width: 100%;
-        padding: 1.2rem 1.5rem;
-        flex-direction: row;
-        text-align: left;
-        justify-content: flex-start;
-        gap: 1.2rem;
-        min-height: 80px;
-        border-radius: 20px;
-    }
-
-    .splash-card h3 {
-        font-size: 1.2rem;
-        margin: 0 0 2px 0;
-    }
-
-    .splash-card p {
-        font-size: 0.85rem;
-        margin: 0;
-        opacity: 0.7;
-    }
-
-    .card-icon {
-        font-size: 2rem;
-        margin: 0;
-        width: 40px;
-        display: flex;
         justify-content: center;
     }
 
-    .card-content {
+    .splash-title {
+        font-size: 2rem;
+        margin-bottom: 3rem;
+        padding: 0 2rem;
+    }
+
+    .splash-grid {
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        gap: 1.5rem;
+        padding: 2rem 3rem; /* Space for cards to float */
+        width: 100%;
+        scrollbar-width: none; /* Hide scrollbar Firefox */
+        -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
+    }
+
+    .splash-grid::-webkit-scrollbar {
+        display: none; /* Hide scrollbar Chrome/Safari */
+    }
+
+    .splash-card {
+        flex: 0 0 auto;
+        width: 75vw;
+        max-width: 300px;
+        min-height: 380px;
+        padding: 3rem 2rem;
+        flex-direction: column; /* Vertical in the deck */
+        text-align: center;
+        justify-content: center;
+        scroll-snap-align: center;
+        gap: 2rem;
+        border-radius: 32px;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+    }
+
+    .splash-card h3 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .splash-card p {
+        font-size: 1.2rem;
+        opacity: 0.6;
+        letter-spacing: 2px;
+    }
+
+    .card-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        width: auto;
+    }
+
+    .card-content {
+        align-items: center;
+    }
+
+    /* Active Card highlight for the deck */
+    .splash-card {
+        transform: scale(0.9);
+        transition: transform 0.4s ease, opacity 0.4s ease;
+        opacity: 0.5;
+    }
+
+    /* This is a CSS trick for scroll-snap-centering - we can't easily detect active in CSS, 
+       but we can use intersection observer in JS or just rely on the snap feel. 
+       Let's use scale for all but make them look uniform first. */
+    .splash-card {
+        opacity: 1;
+        transform: scale(1);
     }
 
     /* Modals */
