@@ -248,6 +248,18 @@ class PomodoroTimer {
             });
         }
 
+        const timerView = document.getElementById('timer-view');
+        if (timerView) {
+            timerView.style.cursor = 'pointer';
+            timerView.addEventListener('click', () => {
+                if (this.isZenMode) {
+                    this.toggleZenSound();
+                } else {
+                    this.toggleTimer();
+                }
+            });
+        }
+
         const fullscreenBtn = document.getElementById('fullscreen-btn');
         if (fullscreenBtn) {
             fullscreenBtn.addEventListener('click', () => {
@@ -381,17 +393,31 @@ class PomodoroTimer {
     }
 
     toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().then(() => {
-                if (navigator.keyboard && navigator.keyboard.lock) {
-                    navigator.keyboard.lock(['Escape']).catch(e => console.log('Keyboard lock failed:', e));
-                }
-            }).catch(err => {
-                console.log(`Error attempting to enable fullscreen: ${err.message}`);
-            });
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            const requestMethod = document.documentElement.requestFullscreen || 
+                                document.documentElement.webkitRequestFullscreen || 
+                                document.documentElement.mozRequestFullScreen || 
+                                document.documentElement.msRequestFullscreen;
+            
+            if (requestMethod) {
+                requestMethod.call(document.documentElement).then(() => {
+                    if (navigator.keyboard && navigator.keyboard.lock) {
+                        navigator.keyboard.lock(['Escape']).catch(e => console.log('Keyboard lock failed:', e));
+                    }
+                }).catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                console.log("Fullscreen API is not supported on this device/browser.");
+                // For iOS, we can't do true fullscreen via JS on elements, but PWA handles it.
+            }
         } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
+            const exitMethod = document.exitFullscreen || 
+                             document.webkitExitFullscreen || 
+                             document.mozCancelFullScreen || 
+                             document.msExitFullscreen;
+            if (exitMethod) {
+                exitMethod.call(document);
             }
         }
     }
