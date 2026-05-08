@@ -1,54 +1,50 @@
-# Antigravity Pomodoro (Focus Flow)
+# ⏳ Antigravity Pomodoro (Focus Flow)
 
-A premium, glassmorphic Pomodoro Timer designed for deep focus and flow. Featuring dynamic themes, ambient sounds, and a specialized Zen mode.
+[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen.svg)](https://protikchowdhury.github.io/Pomodoro-timer/)
+[![PWA Ready](https://img.shields.io/badge/PWA-Ready-orange.svg)](https://protikchowdhury.github.io/Pomodoro-timer/)
 
-## ✨ Features
+A premium, glassmorphic Pomodoro Timer built for deep focus and aesthetic pleasure. Focus Flow combines high-performance timer logic with immersive environmental themes and ambient audio to create the ultimate productivity environment.
 
-- **Dynamic Themes**: Choose between Campfire, Cyberpunk, Forest, and Midnight vibes.
-- **Ambient Sounds**: Integrated rain and environmental audio to help you stay in the zone.
-- **Custom Timers**: Create and save your own work/break intervals.
-- **Zen Mode**: A minimal interface with just a clock and rain—perfect for distraction-free work.
-- **PWA Ready**: Installable on mobile and desktop for offline use.
-- **Mobile Optimized**: Responsive design that fits perfectly on any screen with touch-optimized interactions.
+## 🔗 [Launch Live Demo](https://protikchowdhury.github.io/Pomodoro-timer/)
 
-## 📱 Mobile Experience
+---
 
-The app has been specifically optimized for mobile devices:
-- **No Horizontal Scroll**: Guaranteed to fit within the viewport boundaries.
-- **Tactile Feedback**: Interactive elements provide visual feedback on touch.
-- **Fullscreen Support**: Use the fullscreen button to turn your phone into a dedicated focus clock.
+## ✨ Key Features
 
-## 🚀 GitHub Deployment & Management
+- **🎨 Dynamic Themes**: Switch between multiple visual vibes:
+    - **Campfire**: Warm reds and oranges with a crackling atmosphere.
+    - **Cyberpunk**: Neon pinks and cyans with a high-tech grid.
+    - **Forest**: Organic greens and ambers with a natural feel.
+    - **Midnight**: Deep purples and blues with a rotating galaxy effect.
+- **🌧️ Immersive Audio**: Integrated high-quality rain sounds with crossfade looping for a seamless acoustic environment.
+- **⚙️ Custom Flexibility**: Create, save, and delete your own custom work/break intervals.
+- **🧘 Zen Mode**: A distraction-free experience featuring only a minimal clock and ambient sounds.
+- **📱 Mobile Perfection**: Fully responsive, touch-optimized, and "one-screen" layout guaranteed.
+- **🔋 PWA Support**: Offline capability and home-screen installability.
 
-To keep your project updated on GitHub, follow these instructions. 
+## 📱 Mobile Interaction Guide
 
-### What I (AI Assistant) Can and Cannot Do
-- **I CAN**: Provide code updates, fix bugs, and optimize layouts. I can also give you the exact terminal commands to sync your changes.
-- **I CANNOT**: Directly push to your GitHub repository, manage your GitHub secrets, or change your repository settings (like GitHub Pages activation) on the GitHub website.
+The app is specifically engineered for mobile use:
+- **Tap-to-Action**: Tap the main timer ring to Start or Pause.
+- **Haptic Visuals**: All buttons provide immediate visual feedback on touch.
+- **True Fullscreen**: Specialized support for mobile browsers to turn your device into a dedicated desktop clock.
 
-### How to Sync Your Changes
-After I make changes to your local files, you should run the following commands in your terminal to update GitHub:
+## 🚀 Deployment & Local Setup
+
+### To Sync Changes to GitHub:
+If you are modifying the code locally, use the following commands to update your live site:
 
 ```bash
-# 1. Stage the changes
 git add .
-
-# 2. Commit the changes
-git commit -m "feat: optimize mobile UI and improve interactiveness"
-
-# 3. Push to your repository
+git commit -m "feat: enhance professional documentation and demo links"
 git push origin main
 ```
 
-### Deploying to GitHub Pages
-If you want to host this online:
-1. Go to your repository on GitHub.
-2. Go to **Settings** > **Pages**.
-3. Select `main` branch and `/ (root)` folder.
-4. Click **Save**. Your app will be live at `https://your-username.github.io/your-repo-name/`.
+### GitHub Pages Setup
+This project is pre-configured for GitHub Pages. Ensure your repository settings have GitHub Pages enabled on the `main` branch.
 
-## 🛠 Tech Stack
-- HTML5 / CSS3 (Vanilla)
-- JavaScript (ES6+)
-- Service Workers for PWA support
-- Canvas API for background animations
+## 🛠 Technology
+- **Core**: Vanilla JavaScript (ES6+), HTML5, CSS3
+- **Graphics**: HTML5 Canvas API for smooth background animations
+- **Audio**: Web Audio API with Base64 data injection for zero-latency loading
+- **Offline**: Service Worker (PWA) architecture
