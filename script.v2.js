@@ -16,106 +16,83 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const splash = document.getElementById('splash-screen');
-    const cards = document.querySelectorAll('.splash-card');
+    const splashGrid = document.querySelector('.splash-grid');
+
+    const handleSplashCardClick = (card, customTimer = null) => {
+        console.log("Splash Card clicked:", customTimer ? customTimer.name : card.dataset.work || card.dataset.mode);
+
+        // 1. Fullscreen MUST be first (User Interaction Restriction)
+        if (timer) {
+            try {
+                timer.toggleFullScreen();
+            } catch (e) { console.warn("Fullscreen failed", e); }
+        }
+
+        // 2. Remove Splash IMMEDIATELY
+        if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                splash.remove();
+            }, 500);
+        }
+
+        // 3. Show Main UI
+        const container = document.querySelector('.glass-container');
+        if (container) {
+            container.style.display = 'flex';
+            void container.offsetWidth; // Trigger reflow
+            container.style.opacity = '1';
+        }
+
+        // 4. Set Mode & Start
+        if (timer) {
+            if (customTimer) {
+                timer.selectCustomTimer(customTimer);
+                timer.start();
+            } else if (card.dataset.mode === 'zen') {
+                const zenBtn = document.getElementById('zen-mode-btn');
+                if (zenBtn) timer.setMode(zenBtn);
+            } else {
+                const workMins = card.dataset.work;
+                const modeBtn = document.querySelector(`.mode-btn[data-work="${workMins}"]`);
+                if (modeBtn) timer.setMode(modeBtn);
+                timer.start();
+            }
+        }
+    };
 
     // Inject Custom Timers into Splash Screen
     if (timer && timer.customTimers && timer.customTimers.length > 0) {
-        const splashGrid = document.querySelector('.splash-grid');
         if (splashGrid) {
             timer.customTimers.forEach(ct => {
-                const el = document.createElement('div');
+                const el = document.createElement('button'); // Changed to button for consistency
                 el.className = 'splash-card custom-card';
                 el.dataset.customId = ct.id;
 
-                // Styling specifically for custom card if needed via style.css or inline
-                // Reusing splash-card class gives base styling
-
                 el.innerHTML = `
                     <div class="card-icon">⭐</div>
-                    <h3>${ct.name}</h3>
-                    <p>${ct.work}m Work • ${ct.hasBreak ? ct.break + 'm Break' : 'No Break'}</p>
+                    <div class="card-content">
+                        <h3>${ct.name}</h3>
+                        <p>${ct.work}m Work • ${ct.hasBreak ? ct.break + 'm Break' : 'No Break'}</p>
+                    </div>
                 `;
 
-                // Add click listener
-                el.addEventListener('click', () => {
-                    console.log("Custom Card clicked:", ct.name);
-
-                    // 1. Show Main UI
-                    const container = document.querySelector('.glass-container');
-                    if (container) {
-                        container.style.display = 'flex';
-                        void container.offsetWidth; // Trigger reflow
-                        container.style.opacity = '1';
-                    }
-
-                    // 2. Select Timer & Start
-                    timer.selectCustomTimer(ct);
-                    timer.start();
-                    timer.toggleFullScreen();
-
-                    // 3. Remove Splash
-                    if (splash) {
-                        splash.style.opacity = '0';
-                        setTimeout(() => splash.remove(), 500);
-                    }
-                });
-
+                el.addEventListener('click', () => handleSplashCardClick(el, ct));
                 splashGrid.appendChild(el);
             });
         }
     }
 
-    if (splash && cards.length > 0) {
-        console.log("Splash screen found, attaching listeners to", cards.length, "cards");
-        cards.forEach(card => {
-            const handleCardClick = () => {
-                console.log("Card clicked:", card.dataset.work);
-
-                // 1. Remove Splash IMMEDIATELY (Before any potential failures)
-                if (splash) {
-                    splash.style.display = 'none'; 
-                    splash.remove(); 
-                }
-
-                // 2. Fullscreen MUST be first (User Interaction Restriction)
-                if (timer) {
-                    try {
-                        timer.toggleFullScreen();
-                    } catch(e) { console.warn("Fullscreen failed", e); }
-                }
-
-                // 3. Show Main UI
-                const container = document.querySelector('.glass-container');
-                if (container) {
-                    container.style.display = 'flex';
-                    container.style.opacity = '1';
-                }
-
-                // 4. Set Mode & Start
-                if (timer) {
-                    // Check for Zen Mode
-                    if (card.dataset.mode === 'zen') {
-                        const zenBtn = document.getElementById('zen-mode-btn');
-                        if (zenBtn) timer.setMode(zenBtn);
-                        return; 
-                    }
-
-                    const workMins = card.dataset.work;
-                    const modeBtn = document.querySelector(`.mode-btn[data-work="${workMins}"]`);
-                    if (modeBtn) timer.setMode(modeBtn);
-                    timer.start();
-                }
-            };
-
-            card.addEventListener('click', handleCardClick);
-            card.addEventListener('touchstart', (e) => {
-                // Prevent duplicate trigger but allow the action
-                e.preventDefault();
-                handleCardClick();
-            }, { passive: false });
+    // Attach listeners to static cards
+    const staticCards = document.querySelectorAll('.splash-card:not(.custom-card)');
+    if (splash && staticCards.length > 0) {
+        console.log("Attaching listeners to", staticCards.length, "static cards");
+        staticCards.forEach(card => {
+            card.addEventListener('click', () => handleSplashCardClick(card));
         });
     } else {
-        console.warn("Splash screen or cards not found");
+        console.warn("Splash screen or static cards not found");
     }
 });
 
