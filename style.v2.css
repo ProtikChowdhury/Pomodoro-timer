@@ -817,7 +817,7 @@ body.break-mode .timer-display {
 
     /* Splash Screen - Compact fit */
     .splash-container {
-        padding: 1.5rem;
+        padding: 0.5rem;
         height: 100dvh;
         width: 100vw;
         display: flex;
@@ -825,11 +825,12 @@ body.break-mode .timer-display {
         justify-content: center;
         align-items: center;
         overflow: hidden;
+        gap: 0;
     }
 
     .splash-title {
-        font-size: 1.8rem;
-        margin-bottom: 2.5rem;
+        font-size: clamp(1.1rem, 5vh, 1.4rem);
+        margin-bottom: 2vh;
         font-weight: 300;
         letter-spacing: 1px;
     }
@@ -837,32 +838,31 @@ body.break-mode .timer-display {
     .splash-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: clamp(0.8rem, 4vw, 1.5rem);
-        width: 100%;
-        max-width: 440px;
-        height: auto;
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0.75rem;
+        width: 90%;
+        max-width: 380px;
+        height: 60vh; /* Fixed height relative to screen */
+        max-height: 500px;
         padding: 0;
     }
 
     .splash-card {
         width: 100%;
-        min-height: 180px;
-        aspect-ratio: 0.9 / 1;
-        padding: 1.5rem 1rem;
+        height: 100%;
+        min-height: unset;
+        padding: 1vh 0.5rem;
+        display: flex;
         flex-direction: column;
-        gap: 0.6rem;
-        border-radius: 28px;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+        border-radius: 20px;
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        position: relative;
-        overflow: hidden;
-        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                    background 0.3s ease, 
-                    border-color 0.3s ease,
-                    box-shadow 0.3s ease;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
     }
 
     .splash-card::before {
@@ -890,21 +890,18 @@ body.break-mode .timer-display {
     }
 
     .splash-card h3 {
-        font-size: 1.2rem;
+        font-size: clamp(0.85rem, 4vh, 1rem);
         margin: 0;
-        font-weight: 500;
     }
 
     .splash-card p {
-        font-size: 0.85rem;
-        opacity: 0.6;
-        letter-spacing: 0.5px;
+        font-size: clamp(0.7rem, 3vh, 0.8rem);
+        opacity: 0.5;
     }
 
     .card-icon {
-        font-size: 2.5rem;
-        margin: 0;
-        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+        font-size: clamp(1.8rem, 8vh, 2.2rem);
+        margin-bottom: 0.1rem;
     }
 
     .instruction {
