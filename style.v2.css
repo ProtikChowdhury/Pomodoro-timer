@@ -440,6 +440,55 @@ body {
     opacity: 0.8;
 }
 
+/* Custom Timer Bar on Splash */
+.splash-custom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 330px;
+    margin: 2rem auto 0;
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0;
+    animation: fadeInUp 0.8s 0.4s forwards;
+}
+
+.splash-custom-bar:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-work);
+    transform: translateY(-2px);
+}
+
+.splash-custom-bar:active {
+    transform: scale(0.97);
+}
+
+.custom-bar-icon {
+    font-size: 1.2rem;
+}
+
+.custom-bar-text {
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+.custom-bar-arrow {
+    font-size: 1.4rem;
+    opacity: 0.5;
+    margin-left: auto;
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -902,6 +951,15 @@ body.break-mode .timer-display {
     .card-icon {
         font-size: 1.8rem;
         margin-bottom: 0.1rem;
+    }
+
+    .splash-custom-bar {
+        max-width: 330px;
+        width: 90%;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+        margin-top: 1.5rem;
+        -webkit-tap-highlight-color: transparent;
     }
 
     #fullscreen-btn {

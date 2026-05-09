@@ -140,6 +140,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Custom Timer Button on Splash
+    const splashCustomBtn = document.getElementById('splash-custom-btn');
+    if (splashCustomBtn && timer) {
+        splashCustomBtn.addEventListener('click', () => {
+            timer.openCustomTimerModal();
+        });
+    }
+
     // Mark as initial splash active
     document.body.classList.add('splash-active');
 });
@@ -1008,7 +1016,30 @@ class PomodoroTimer {
         const newWorkDuration = timer.work * 60;
         const newBreakDuration = timer.break * 60;
 
-        if (this.isRunning) {
+        // If splash is active, transition to timer view
+        const splash = document.getElementById('splash-screen');
+        const container = document.querySelector('.glass-container');
+        if (splash && document.body.classList.contains('splash-active')) {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                document.body.classList.remove('splash-active');
+            }, 500);
+
+            if (container) {
+                container.style.display = 'flex';
+                void container.offsetWidth;
+                container.style.opacity = '1';
+            }
+
+            // Set and start immediately
+            this.pendingMode = null;
+            this.workDuration = newWorkDuration;
+            this.breakDuration = newBreakDuration;
+            this.activeCustomTimerId = timer.id;
+            this.resetTimerState();
+            this.start();
+        } else if (this.isRunning) {
             // Queue switch
             this.pendingMode = {
                 type: 'custom',
