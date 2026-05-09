@@ -74,7 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 timer.start();
             } else if (card.dataset.mode === 'zen') {
                 const zenBtn = document.getElementById('zen-mode-btn');
-                if (zenBtn) timer.setMode(zenBtn);
+                if (zenBtn) {
+                    timer.setMode(zenBtn);
+                    // Force pause if it accidentally started a timer
+                    timer.pause();
+                    timer.startZenMode();
+                }
             } else {
                 const workMins = card.dataset.work;
                 const modeBtn = document.querySelector(`.mode-btn[data-work="${workMins}"]`);

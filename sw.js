@@ -1,4 +1,4 @@
-const CACHE_NAME = 'focus-flow-final-v1';
+const CACHE_NAME = 'focus-flow-final-v2-1';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -9,7 +9,7 @@ const ASSETS_TO_CACHE = [
     './icon.png'
 ];
 
-// Install Event: Cache core assets & Force Activate
+// Install Event
 self.addEventListener('install', (event) => {
     self.skipWaiting();
     event.waitUntil(
@@ -25,7 +25,7 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activate Event: Clean up old caches & Claim Clients
+// Activate Event
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((keyList) => {
@@ -40,7 +40,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Event: Stale-while-revalidate strategy
+// Fetch Event
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.open(CACHE_NAME).then((cache) => {
