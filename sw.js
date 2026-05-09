@@ -11,12 +11,17 @@ const ASSETS_TO_CACHE = [
 
 // Install Event: Cache core assets & Force Activate
 self.addEventListener('install', (event) => {
-    self.skipWaiting(); // Force active immediately
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log('[Service Worker] Caching all: app shell and content');
-                return cache.addAll(ASSETS_TO_CACHE);
+                console.log('[Service Worker] Caching app shell');
+                // Use map to catch individual failures if an asset is missing
+                return Promise.all(
+                    ASSETS_TO_CACHE.map(url => {
+                        return cache.add(url).catch(err => console.warn(`Failed to cache: ${url}`, err));
+                    })
+                );
             })
     );
 });
