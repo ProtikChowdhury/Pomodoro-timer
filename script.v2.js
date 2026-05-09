@@ -87,6 +87,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Splash Grid Auto-Scaling (The "Perfect Fit" Engine)
+    const adjustSplashScaling = () => {
+        if (!splashGrid) return;
+        const vh = window.innerHeight;
+        const vw = window.innerWidth;
+        const isSmallScreen = vw < 600;
+
+        if (isSmallScreen) {
+            const gridHeight = splashGrid.offsetHeight;
+            const availableHeight = vh * 0.75; // Use 75% of screen for grid
+            
+            if (gridHeight > availableHeight) {
+                const scale = availableHeight / gridHeight;
+                splashGrid.style.transform = `scale(${Math.min(scale, 1)})`;
+                splashGrid.style.transformOrigin = 'center center';
+                console.log(`Auto-Scaling Splash Grid: ${scale.toFixed(2)}`);
+            } else {
+                splashGrid.style.transform = 'none';
+            }
+        }
+    };
+
     // Attach listeners to static cards
     const staticCards = document.querySelectorAll('.splash-card:not(.custom-card)');
     if (splash && staticCards.length > 0) {
@@ -94,8 +116,20 @@ document.addEventListener('DOMContentLoaded', () => {
         staticCards.forEach(card => {
             card.addEventListener('click', () => handleSplashCardClick(card));
         });
+        
+        // Initial scale and listen for changes
+        setTimeout(adjustSplashScaling, 100);
+        window.addEventListener('resize', adjustSplashScaling);
     } else {
         console.warn("Splash screen or static cards not found");
+    }
+
+    // Zen Mode Escape Listener
+    const zenExitBtn = document.getElementById('zen-exit-btn');
+    if (zenExitBtn) {
+        zenExitBtn.addEventListener('click', () => {
+            if (timer) timer.stopZenMode();
+        });
     }
 });
 

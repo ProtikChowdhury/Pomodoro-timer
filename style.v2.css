@@ -904,6 +904,10 @@ body.break-mode .timer-display {
         margin-bottom: 0.1rem;
     }
 
+    #fullscreen-btn {
+        display: none !important;
+    }
+
     .instruction {
         display: none !important; /* Hide keyboard hints on mobile */
     }
@@ -1401,6 +1405,36 @@ body.zen-mode-active #zen-mode-btn {
     background: rgba(147, 197, 253, 0.2);
     color: #bfdbfe;
     box-shadow: 0 0 15px rgba(147, 197, 253, 0.1);
+}
+
+/* Zen Mode Exit Button */
+#zen-exit-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+body.zen-mode-active #zen-exit-btn {
+    display: flex;
+}
+
+#zen-exit-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
 }
 
 /* --- Minimal Zen UI Enhancements --- */
