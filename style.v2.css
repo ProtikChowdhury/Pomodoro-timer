@@ -817,7 +817,7 @@ body.break-mode .timer-display {
 
     /* Splash Screen - Compact fit */
     .splash-container {
-        padding: 0.5rem;
+        padding: 0;
         height: 100dvh;
         width: 100vw;
         display: flex;
@@ -825,7 +825,7 @@ body.break-mode .timer-display {
         justify-content: center;
         align-items: center;
         overflow: hidden;
-        gap: 0;
+        gap: 2vh;
     }
 
     .splash-title {
@@ -1408,27 +1408,30 @@ body.zen-mode-active #zen-mode-btn {
     box-shadow: 0 0 15px rgba(147, 197, 253, 0.1);
 }
 
-/* Zen Mode Exit Button */
+/* Zen Mode Exit Button - Now Universal */
 #zen-exit-btn {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    display: none;
+    display: none; /* Controlled by JS or active states */
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    z-index: 2000;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
+/* Show Exit button when timer or zen mode is active */
+body:not(.splash-active) #zen-exit-btn,
 body.zen-mode-active #zen-exit-btn {
     display: flex;
 }

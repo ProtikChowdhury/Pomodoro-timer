@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
         timer = new PomodoroTimer();
     } catch (e) {
         console.error("Failed to initialize Timer:", e);
-        alert("App failed to initialize: " + e.message);
     }
 
     try {
@@ -17,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const splash = document.getElementById('splash-screen');
     const splashGrid = document.querySelector('.splash-grid');
+    const container = document.querySelector('.glass-container');
 
     // Splash Grid Auto-Scaling (The "Perfect Fit" Engine)
     const adjustSplashScaling = () => {
@@ -26,49 +26,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const isMobile = vw < 600;
 
         if (isMobile) {
-            // Reset scaling to measure true height
             splashGrid.style.transform = 'none';
             splashGrid.style.width = '90%';
             
             const gridHeight = splashGrid.scrollHeight;
-            const containerHeight = vh * 0.7; // Aim for 70% of screen height
+            const containerHeight = vh * 0.55; // Use 55% of screen height for grid
             
             if (gridHeight > containerHeight) {
                 const scale = containerHeight / gridHeight;
-                splashGrid.style.transform = `scale(${Math.min(scale, 0.95)})`;
+                splashGrid.style.transform = `scale(${Math.min(scale, 1)})`;
                 splashGrid.style.transformOrigin = 'center center';
                 console.log(`Auto-Scaling Splash Grid: ${scale.toFixed(2)}`);
+            } else {
+                splashGrid.style.transform = 'none';
             }
         } else {
             splashGrid.style.transform = 'none';
         }
     };
+
+    const handleSplashCardClick = (card, customTimer = null) => {
         console.log("Splash Card clicked:", customTimer ? customTimer.name : card.dataset.work || card.dataset.mode);
 
-        // 1. Fullscreen MUST be first (User Interaction Restriction)
         if (timer) {
             try {
                 timer.toggleFullScreen();
             } catch (e) { console.warn("Fullscreen failed", e); }
         }
 
-        // 2. Hide Splash (But don't remove it!)
         if (splash) {
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
+                document.body.classList.remove('splash-active');
             }, 500);
         }
 
-        // 3. Show Main UI
-        const container = document.querySelector('.glass-container');
         if (container) {
             container.style.display = 'flex';
             void container.offsetWidth; // Trigger reflow
             container.style.opacity = '1';
         }
 
-        // 4. Set Mode & Start
         if (timer) {
             if (customTimer) {
                 timer.selectCustomTimer(customTimer);
@@ -85,74 +84,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Inject Custom Timers into Splash Screen
-    if (timer && timer.customTimers && timer.customTimers.length > 0) {
-        if (splashGrid) {
-            timer.customTimers.forEach(ct => {
-                const el = document.createElement('button'); // Changed to button for consistency
-                el.className = 'splash-card custom-card';
-                el.dataset.customId = ct.id;
-
-                el.innerHTML = `
-                    <div class="card-icon">⭐</div>
-                    <div class="card-content">
-                        <h3>${ct.name}</h3>
-                        <p>${ct.work}-${ct.break}</p>
-                    </div>
-                `;
-
-                el.addEventListener('click', () => handleSplashCardClick(el, ct));
-                splashGrid.appendChild(el);
-            });
-        }
-    }
-
-    // Splash Grid Auto-Scaling (The "Perfect Fit" Engine)
-    const adjustSplashScaling = () => {
-        if (!splashGrid) return;
-        const vh = window.innerHeight;
-        const vw = window.innerWidth;
-        const isSmallScreen = vw < 600;
-
-        if (isSmallScreen) {
-            const gridHeight = splashGrid.offsetHeight;
-            const availableHeight = vh * 0.75; // Use 75% of screen for grid
-            
-            if (gridHeight > availableHeight) {
-                const scale = availableHeight / gridHeight;
-                splashGrid.style.transform = `scale(${Math.min(scale, 1)})`;
-                splashGrid.style.transformOrigin = 'center center';
-                console.log(`Auto-Scaling Splash Grid: ${scale.toFixed(2)}`);
-            } else {
-                splashGrid.style.transform = 'none';
-            }
-        }
-    };
-
-    // Attach listeners to static cards
-    const staticCards = document.querySelectorAll('.splash-card:not(.custom-card)');
-    if (splash && staticCards.length > 0) {
-        console.log("Attaching listeners to", staticCards.length, "static cards");
-        staticCards.forEach(card => {
-            card.addEventListener('click', () => handleSplashCardClick(card));
+    // Inject Custom Timers
+    if (timer && timer.customTimers && timer.customTimers.length > 0 && splashGrid) {
+        timer.customTimers.forEach(ct => {
+            const el = document.createElement('button');
+            el.className = 'splash-card custom-card';
+            el.dataset.customId = ct.id;
+            el.innerHTML = `
+                <div class="card-icon">⭐</div>
+                <div class="card-content">
+                    <h3>${ct.name}</h3>
+                    <p>${ct.work}-${ct.break}</p>
+                </div>
+            `;
+            el.addEventListener('click', () => handleSplashCardClick(el, ct));
+            splashGrid.appendChild(el);
         });
-        
-        // Initial scale and listen for changes
-        setTimeout(adjustSplashScaling, 100);
-        window.addEventListener('resize', adjustSplashScaling);
-    } else {
-        console.warn("Splash screen or static cards not found");
     }
 
-    // Zen Mode Escape Listener
-    const zenExitBtn = document.getElementById('zen-exit-btn');
-    if (zenExitBtn) {
-        zenExitBtn.addEventListener('click', () => {
+    const staticCards = document.querySelectorAll('.splash-card:not(.custom-card)');
+    staticCards.forEach(card => {
+        card.addEventListener('click', () => handleSplashCardClick(card));
+    });
+
+    // Initial scale
+    setTimeout(adjustSplashScaling, 100);
+    window.addEventListener('resize', adjustSplashScaling);
+
+    // Universal Exit Button Listener
+    const exitToMenuBtn = document.getElementById('zen-exit-btn');
+    if (exitToMenuBtn) {
+        exitToMenuBtn.addEventListener('click', () => {
             if (timer) {
-                timer.stopZenMode();
+                if (timer.isZenMode) timer.stopZenMode();
+                else timer.pause();
+                
                 // Return to Splash
-                const splash = document.getElementById('splash-screen');
-                const container = document.querySelector('.glass-container');
                 if (splash && container) {
                     container.style.opacity = '0';
                     setTimeout(() => {
@@ -160,11 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         splash.style.display = 'flex';
                         void splash.offsetWidth;
                         splash.style.opacity = '1';
+                        document.body.classList.add('splash-active');
+                        adjustSplashScaling(); // Re-scale
                     }, 500);
                 }
             }
         });
     }
+
+    // Mark as initial splash active
+    document.body.classList.add('splash-active');
 });
 
 class PomodoroTimer {
