@@ -1,8 +1,8 @@
-const CACHE_NAME = 'focus-flow-v5-0';
+const CACHE_NAME = 'focus-flow-v7-0';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
-    './style.final.css',
+    './style.v2.css',
     './script.v2.js',
     './rain_sound.js',
     './manifest.json',
