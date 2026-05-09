@@ -631,15 +631,22 @@ class PomodoroTimer {
 
         // UI Changes
         document.body.classList.remove('zen-mode-active');
-        document.title = "Focus Flow"; // Will be updated by timer display shortly
+        document.title = "Focus Flow";
 
         // Stop Rain Animation
         if (typeof ZenMode !== 'undefined') {
             ZenMode.stop();
         }
 
-        // Note: We deliberately do NOT stop the sound automatically. 
-        // User might want to keep listening while working.
+        // STOP THE RAIN SOUND IMMEDIATELY
+        if (this.soundManager) {
+            this.soundManager.toggleNoise(false);
+            const toggleBtn = document.getElementById('noise-toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.textContent = 'Play';
+                toggleBtn.classList.remove('active');
+            }
+        }
     }
 
     toggleZenSound() {

@@ -839,29 +839,27 @@ body.break-mode .timer-display {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(2, 1fr);
-        gap: 0.6rem;
+        gap: 0.5rem;
         width: 90%;
-        max-width: 360px;
-        height: 55vh; /* Very conservative height to ensure fit */
-        max-height: 480px;
+        max-width: 340px;
+        height: 45vh; /* STRICT: Grid only takes up 45% of height */
         padding: 0;
         margin: 0 auto;
     }
 
     .splash-card {
         width: 100%;
-        height: 100%;
-        min-height: unset;
-        padding: 1vh 0.5rem;
+        height: 100%; /* Fill the 45vh grid slot */
+        min-height: 0; /* No minimum! */
+        padding: 0.5rem;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         gap: 0.2rem;
-        border-radius: 20px;
+        border-radius: 16px;
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
     }
@@ -891,17 +889,17 @@ body.break-mode .timer-display {
     }
 
     .splash-card h3 {
-        font-size: clamp(0.85rem, 4vh, 1rem);
+        font-size: 0.9rem;
         margin: 0;
     }
 
     .splash-card p {
-        font-size: clamp(0.7rem, 3vh, 0.8rem);
+        font-size: 0.7rem;
         opacity: 0.5;
     }
 
     .card-icon {
-        font-size: clamp(1.8rem, 8vh, 2.2rem);
+        font-size: 1.8rem;
         margin-bottom: 0.1rem;
     }
 
