@@ -281,7 +281,37 @@ body {
 }
 
 
-/* Fixed syntax error (removed stray brace) */
+/* Splash Background Blobs */
+.splash-blob {
+    position: absolute;
+    width: 60vmax;
+    height: 60vmax;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    z-index: -1;
+    animation: splashFloat 20s infinite alternate;
+}
+
+.sb-1 {
+    background: var(--accent-work);
+    top: -20%;
+    left: -20%;
+}
+
+.sb-2 {
+    background: #7c3aed;
+    bottom: -20%;
+    right: -20%;
+    animation-delay: -5s;
+    animation-duration: 25s;
+}
+
+@keyframes splashFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(10%, 10%) scale(1.1); }
+    100% { transform: translate(-5%, 5%) scale(0.9); }
+}
 
 #splash-screen {
     position: fixed;
@@ -290,15 +320,13 @@ body {
     width: 100%;
     height: 100vh;
     height: 100dvh;
-    background: radial-gradient(circle at center, rgba(15, 5, 5, 1), rgba(0, 0, 0, 1));
+    background: #050505;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
     transition: opacity 0.5s ease, visibility 0.5s ease;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    overflow: hidden; /* No scrolling allowed */
+    overflow: hidden;
 }
 
 .splash-container {
@@ -322,20 +350,21 @@ body {
 }
 
 .splash-grid {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
     padding: 0 2rem;
-    flex-wrap: wrap;
-    max-width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .splash-card {
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 28px; /* Softer corners */
-    padding: 2.5rem 2rem;
-    width: 240px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 32px;
+    padding: 3rem 2rem;
+    width: 100%;
+    min-width: 240px;
     min-height: 280px;
     cursor: pointer;
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -347,10 +376,25 @@ body {
     justify-content: center;
     font-family: inherit;
     text-align: center;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     touch-action: manipulation;
+    position: relative;
+}
+
+.splash-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 32px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
 }
 
 .splash-card:hover {
