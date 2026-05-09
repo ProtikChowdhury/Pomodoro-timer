@@ -18,10 +18,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const splash = document.getElementById('splash-screen');
     const splashGrid = document.querySelector('.splash-grid');
 
-    // Resolution Detection for UI optimization
-    console.log(`Screen Resolution: ${window.screen.width}x${window.screen.height}, Viewport: ${window.innerWidth}x${window.innerHeight}`);
+    // Splash Grid Auto-Scaling (The "Perfect Fit" Engine)
+    const adjustSplashScaling = () => {
+        if (!splashGrid) return;
+        const vh = window.innerHeight;
+        const vw = window.innerWidth;
+        const isMobile = vw < 600;
 
-    const handleSplashCardClick = (card, customTimer = null) => {
+        if (isMobile) {
+            // Reset scaling to measure true height
+            splashGrid.style.transform = 'none';
+            splashGrid.style.width = '90%';
+            
+            const gridHeight = splashGrid.scrollHeight;
+            const containerHeight = vh * 0.7; // Aim for 70% of screen height
+            
+            if (gridHeight > containerHeight) {
+                const scale = containerHeight / gridHeight;
+                splashGrid.style.transform = `scale(${Math.min(scale, 0.95)})`;
+                splashGrid.style.transformOrigin = 'center center';
+                console.log(`Auto-Scaling Splash Grid: ${scale.toFixed(2)}`);
+            }
+        } else {
+            splashGrid.style.transform = 'none';
+        }
+    };
         console.log("Splash Card clicked:", customTimer ? customTimer.name : card.dataset.work || card.dataset.mode);
 
         // 1. Fullscreen MUST be first (User Interaction Restriction)
@@ -31,12 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) { console.warn("Fullscreen failed", e); }
         }
 
-        // 2. Remove Splash IMMEDIATELY
+        // 2. Hide Splash (But don't remove it!)
         if (splash) {
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
-                splash.remove();
             }, 500);
         }
 
@@ -128,7 +148,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const zenExitBtn = document.getElementById('zen-exit-btn');
     if (zenExitBtn) {
         zenExitBtn.addEventListener('click', () => {
-            if (timer) timer.stopZenMode();
+            if (timer) {
+                timer.stopZenMode();
+                // Return to Splash
+                const splash = document.getElementById('splash-screen');
+                const container = document.querySelector('.glass-container');
+                if (splash && container) {
+                    container.style.opacity = '0';
+                    setTimeout(() => {
+                        container.style.display = 'none';
+                        splash.style.display = 'flex';
+                        void splash.offsetWidth;
+                        splash.style.opacity = '1';
+                    }, 500);
+                }
+            }
         });
     }
 });
