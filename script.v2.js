@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const splash = document.getElementById('splash-screen');
     const splashGrid = document.querySelector('.splash-grid');
 
+    // Resolution Detection for UI optimization
+    console.log(`Screen Resolution: ${window.screen.width}x${window.screen.height}, Viewport: ${window.innerWidth}x${window.innerHeight}`);
+
     const handleSplashCardClick = (card, customTimer = null) => {
         console.log("Splash Card clicked:", customTimer ? customTimer.name : card.dataset.work || card.dataset.mode);
 
